@@ -1,0 +1,11 @@
+<jnt = 'http://www.jahia.org/jahia/nt/1.0'>
+<jmix = 'http://www.jahia.org/jahia/mix/1.0'>
+<seumix = 'http://modules.se.jahia.org/se-utils/mix/1.0'>
+<seunt = 'http://modules.se.jahia.org/se-utils/nt/1.0'>
+<seu = 'http://modules.se.jahia.org/se-utils/1.0'>
+
+
+//*** JEXP NESTED SELECTOR PROPS //
+[seumix:mapJExpProperty] mixin
+ - seu:jExpCard (string, choicelist[jExpProfileCardsInitializer,resourceBundle]) indexed=no
+ - seu:jExpProperty (string, choicelist[jExpProfilePropertiesInitializer,dependentProperties='seu:jExpCard',resourceBundle]) indexed=no
