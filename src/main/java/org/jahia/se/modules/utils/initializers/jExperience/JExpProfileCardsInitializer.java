@@ -20,7 +20,7 @@ import java.util.*;
 public class JExpProfileCardsInitializer implements ModuleChoiceListInitializer {
     private static final Logger logger = LoggerFactory.getLogger(JExpProfileCardsInitializer.class);
 
-    private String key="jExpProfileCardsInitializer";
+    private String key="seUtilsJExpProfileCardsInitializer";
     private ContextServerService contextServerService;
 
     @Reference(service= ContextServerService.class)

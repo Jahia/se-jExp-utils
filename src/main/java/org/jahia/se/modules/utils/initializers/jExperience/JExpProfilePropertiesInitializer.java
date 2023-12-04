@@ -21,7 +21,7 @@ import java.util.*;
 public class JExpProfilePropertiesInitializer implements ModuleChoiceListInitializer {
     private static final Logger logger = LoggerFactory.getLogger(JExpProfilePropertiesInitializer.class);
 
-    private String key="jExpProfilePropertiesInitializer";
+    private String key="seUtilsJExpProfilePropertiesInitializer";
     private ContextServerService contextServerService;
     private final String DEPENDENT_PROP_NAME = "seu:jExpCard";
 

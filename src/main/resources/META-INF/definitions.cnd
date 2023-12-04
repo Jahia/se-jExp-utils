@@ -7,5 +7,5 @@
 
 //*** JEXP NESTED SELECTOR PROPS //
 [seumix:mapJExpProperty] mixin
- - seu:jExpCard (string, choicelist[jExpProfileCardsInitializer,resourceBundle]) indexed=no
- - seu:jExpProperty (string, choicelist[jExpProfilePropertiesInitializer,dependentProperties='seu:jExpCard',resourceBundle]) indexed=no
+ - seu:jExpCard (string, choicelist[seUtilsJExpProfileCardsInitializer,resourceBundle]) indexed=no
+ - seu:jExpProperty (string, choicelist[seUtilsJExpProfilePropertiesInitializer,dependentProperties='seu:jExpCard',resourceBundle]) indexed=no
