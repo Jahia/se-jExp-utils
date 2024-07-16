@@ -1,23 +1,14 @@
 package org.jahia.se.modules.utils.initializers.jExperience;
 
-import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.Response;
-import org.apache.unomi.api.Metadata;
 import org.apache.unomi.api.PropertyType;
 import org.jahia.modules.jexperience.admin.ContextServerService;
 import org.jahia.services.content.decorator.JCRSiteNode;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
