@@ -4,6 +4,8 @@ import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
+import org.apache.unomi.api.Metadata;
+import org.apache.unomi.api.PropertyType;
 import org.jahia.modules.jexperience.admin.ContextServerService;
 import org.jahia.services.content.decorator.JCRSiteNode;
 import org.json.JSONArray;
@@ -14,9 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,105 +32,76 @@ public class Utils {
         this.contextServerService = contextServerService;
     }
 
-    public HashMap<String,String> getPropertyNames(String cardName) throws JSONException {
-        JSONArray profileProperties = getProfileProperties ();
+    public HashMap<String,String> getPropertyNames(String cardName) {
+        PropertyType[] profileProperties = getProfileProperties();
         return getPropertyNames(profileProperties,cardName);
     };
 
-    public TreeSet<String> getCardNames() throws JSONException {
-        JSONArray profileProperties = getProfileProperties ();
+    public TreeSet<String> getCardNames() {
+        PropertyType[] profileProperties = getProfileProperties();
         return getCardNames(profileProperties);
     };
 
-    private JSONArray getProfileProperties () {
+    private PropertyType[] getProfileProperties() {
         try {
-            final AsyncHttpClient asyncHttpClient = contextServerService
-                    .initAsyncHttpClient(site.getSiteKey());
+            PropertyType[] profileProperties = contextServerService.executeGetRequest(
+                site.getSiteKey(),
+                "/cxs/profiles/properties/targets/profiles",
+                null,
+                null,
+                PropertyType[].class
+            );
 
-            JSONArray profileProperties;
+            return profileProperties;
 
-            if (asyncHttpClient != null) {
-                AsyncHttpClient.BoundRequestBuilder requestBuilder = contextServerService
-                        .initAsyncRequestBuilder(site.getSiteKey(), asyncHttpClient, "/cxs/profiles/properties",
-                                true, true, true);
-
-                ListenableFuture<Response> future = requestBuilder.execute(new AsyncCompletionHandler<Response>() {
-                    @Override
-                    public Response onCompleted(Response response) {
-                        asyncHttpClient.closeAsynchronously();
-                        return response;
-                    }
-                });
-
-                JSONObject responseBody = new JSONObject(future.get().getResponseBody());
-                profileProperties = responseBody.getJSONArray("profiles");
-                return profileProperties;
-            }
-
-        }catch ( InterruptedException | ExecutionException | IOException | JSONException e) {
+        }catch (IOException e) {
             logger.error("Error happened", e);
         }
         return null;
     };
 
-    private HashMap<String,String> getPropertyNames(JSONArray profileProperties, String cardName) throws JSONException {
+    private HashMap<String,String> getPropertyNames(PropertyType[] profileProperties, String cardName) {
         HashMap<String,String> propertyNames= new HashMap<String,String>();
-        for (int i = 0; i < profileProperties.length(); i++) {
-            JSONObject property = profileProperties.getJSONObject(i);
-            JSONObject metadata = property.getJSONObject("metadata");
-            String propertyCardName = getCardName(property);
-            boolean cardNameMatch = cardName.equals(propertyCardName);
-            boolean multivalued = property.optBoolean("multivalued");
+        Arrays.stream(profileProperties).forEach(props -> {
+            boolean cardNameMatch = cardName.equals(getCardName(props));
+            boolean isMultivalued = props.isMultivalued() != null ? props.isMultivalued() : false;
+            if(cardNameMatch){
+                String propsType = props.getValueTypeId();
+                String propsId = props.getMetadata().getId();
+                String propsName = props.getMetadata().getName();
 
-            if(!cardNameMatch)
-                continue;
-
-//            if(multivalued)
-//                continue;
-
-            String type = property.optString("type");
-            String itemId = property.optString("itemId");
-            String displayName = metadata.optString("name",itemId);
-
-            propertyNames.put(itemId,displayName+" <"+type+">"+(multivalued?"*":""));
-//            propertyNames.put(itemId,displayName);
-        }
+                propertyNames.put(propsId,propsName+" <"+propsType+">"+(isMultivalued?"*":""));
+            }
+        });
 
         return propertyNames;
     };
 
-    private TreeSet<String> getCardNames(JSONArray profileProperties) throws JSONException {
+    private TreeSet<String> getCardNames(PropertyType[] profileProperties) {
         TreeSet<String> cardNames= new TreeSet<>(new Comparator<String>() {
             @Override
             public int compare(String s1, String s2) {
                 return s1.trim().toUpperCase().compareTo(s2.trim().toUpperCase());
             }
         });
-        for (int i = 0; i < profileProperties.length(); i++) {
-            JSONObject property = profileProperties.getJSONObject(i);
-            String cardName = getCardName(property);
+
+        Arrays.stream(profileProperties).forEach(props -> {
+            String cardName = getCardName(props);
             if(!cardName.isEmpty())
                 cardNames.add(cardName);
-        }
+        });
+
         return cardNames;
     };
 
-    private String getCardName(JSONObject property) throws JSONException {
-        JSONObject metadata = property.getJSONObject("metadata");
-        JSONArray systemTags = metadata.optJSONArray("systemTags");
-
-        logger.debug("systemTags.toString() : "+systemTags.toString());
-
-        Pattern cardPattern = Pattern.compile("\"cardDataTag/(\\w+)/(\\d{1,2}(?:\\.\\d{1,2})?)/(.*?)\"");
-        Matcher matcher = cardPattern.matcher(systemTags.toString());
-        //matcher.group(1) = cardId (String);
-        //matcher.group(2) = cardIndex (String);
-        //matcher.group(3) = cardName (String);
+    private String getCardName(PropertyType props) {
         String cardName = "";
+        String tags = props.getMetadata().getSystemTags().toString();
+        Pattern pattern = Pattern.compile("cardDataTag/[^/]+/[^/]+/([^,\\]]+)");
+        Matcher matcher = pattern.matcher(props.getMetadata().getSystemTags().toString());
         if (matcher.find())
-            cardName = matcher.group(3);
+            cardName = matcher.group(1);
 
-        logger.debug("cardName : "+cardName);
         return cardName;
     };
 }
