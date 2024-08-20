@@ -7,7 +7,6 @@ import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.content.nodetypes.ExtendedPropertyDefinition;
 import org.jahia.services.content.nodetypes.initializers.ChoiceListValue;
 import org.jahia.services.content.nodetypes.initializers.ModuleChoiceListInitializer;
-import org.json.JSONException;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -43,7 +42,7 @@ public class JExpProfileCardsInitializer implements ModuleChoiceListInitializer 
             TreeSet<String> cardNames = utils.getCardNames();
             cardNames.forEach(cardName -> choiceListValues.add(new ChoiceListValue(cardName, null, new StringValue(cardName))));
 
-        } catch (RepositoryException | JSONException e){
+        } catch (RepositoryException e){
             logger.error("Error happened", e);
         }
 
