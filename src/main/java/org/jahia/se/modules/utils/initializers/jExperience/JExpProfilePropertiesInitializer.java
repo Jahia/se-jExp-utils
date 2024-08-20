@@ -8,7 +8,6 @@ import org.jahia.services.content.decorator.JCRSiteNode;
 import org.jahia.services.content.nodetypes.ExtendedPropertyDefinition;
 import org.jahia.services.content.nodetypes.initializers.ChoiceListValue;
 import org.jahia.services.content.nodetypes.initializers.ModuleChoiceListInitializer;
-import org.json.JSONException;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -68,7 +67,7 @@ public class JExpProfilePropertiesInitializer implements ModuleChoiceListInitial
             propertyNames.forEach( (id,name) ->  choiceListValues.add(new ChoiceListValue(name, null, new StringValue(id))));
             Collections.sort(choiceListValues, this.choiceListValueComparator);
 
-        } catch (RepositoryException | JSONException e){
+        } catch (RepositoryException e){
             logger.error("Error happened", e);
         }
 
