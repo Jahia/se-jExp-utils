@@ -10,7 +10,7 @@
     <groupId>org.jahia.se.modules</groupId>
     <artifactId>se-jExp-utils</artifactId>
     <name>SE jExperience utils</name>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0</version>
     <packaging>bundle</packaging>
     <description>Utils component for SE to build custom demo with jExperience.</description>
 
@@ -18,7 +18,7 @@
         <connection>scm:git:git@github.com:Jahia/se-jExp-utils.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/se-jExp-utils.git</developerConnection>
         <url>https://github.com/Jahia/se-jExp-utils</url>
-      <tag>HEAD</tag>
+      <tag>se-jExp-utils-2.0.0</tag>
   </scm>
 
     <properties>
